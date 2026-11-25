@@ -43,6 +43,7 @@ SUPERLULIB=#/usr/local/lib/libsuperlu.a
 
 # dynamic linking
 #LIBS = ${ARPACK} -L/${MKLROOT}/lib/intel64 -lmkl_core -lmkl_sequential -lmkl_intel_lp64 -lpthread ${SUPERLULIB}
+
 OPENBLAS_DIR ?= /opt/openblas
 
 OPENBLAS_LIB := $(shell \

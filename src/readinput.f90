@@ -4968,7 +4968,7 @@ subroutine build_map_supercell_primitivecell
          atom_name_pc= 'None'
          call direct_cart_real_unfold(tau_i_tilde, pos_cart_pc)
          if (cpuid.eq.0)then
-            write(stdout, '((i7, 2X, a5), " -->", (i7, 2X, a5) 9f14.6)')ia, Origin_cell%Atom_name(ia), map_ia, atom_name_pc, &
+            write(stdout, '((i7, 2X, a5), " -->", (i7, 2X, a5), 9f14.6)')ia, Origin_cell%Atom_name(ia), map_ia, atom_name_pc, &
             Origin_cell%Atom_position_cart(:, ia)/Angstrom2atomic
          endif
       else

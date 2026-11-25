@@ -70,3 +70,12 @@ main : $(OBJ)
 clean :
 	rm -f *.o *.mod *~ wt.x
 
+
+PREFIX ?= /usr/local
+BINDIR = $(PREFIX)/bin
+
+.PHONY: install
+
+install: wt.x
+	mkdir -p $(DESTDIR)$(BINDIR)
+	cp wt.x $(DESTDIR)$(BINDIR)/

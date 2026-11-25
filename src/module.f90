@@ -15,8 +15,10 @@
      use prec
 
 #if defined (MPI)
-     include 'mpif.h'
+     !> include 'mpif.h'
+     use mpi
 #endif
+     implicit none
 
      integer :: cpuid  ! CPU id for mpi
      integer :: num_cpu  ! Number of processors for mpi
@@ -295,7 +297,7 @@
         integer :: ierr
         integer :: NumRequest
         integer, pointer :: MpiRequest(:)
-        integer, pointer :: MpiStatus(:)
+        integer, pointer :: MpiStatus(:,:)
   
         NumRequest= CommHandle%NumRequest
         MpiRequest=> CommHandle%MpiRequest
@@ -304,7 +306,8 @@
   
         if (NumRequest>0) then
 #if defined (MPI)
-           allocate(MpiStatus(mpi_status_size*NumRequest))
+           allocate(MpiRequest(NumRequest))
+           allocate(MpiStatus(mpi_status_size,NumRequest))
            call mpi_waitall(NumRequest, MpiRequest, MpiStatus, ierr)
 #endif
         endif

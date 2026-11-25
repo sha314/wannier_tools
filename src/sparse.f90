@@ -943,7 +943,7 @@ contains
          integer, pointer :: Displs(:)
          integer, pointer :: info(:)
          integer, pointer :: mpirequest(:)
-         integer, pointer :: mpistatus(:)
+         integer, pointer :: mpistatus(:,:)
 
          integer :: i, j
          integer :: ierr
@@ -1150,7 +1150,7 @@ contains
          if (NumRequest>0) then
             allocate(mpirequest(NumRequest), stat=ierr)
 #if defined (MPI)
-            allocate(mpistatus(NumRequest*mpi_status_size), stat=ierr)
+            allocate(mpistatus(NumRequest, mpi_status_size), stat=ierr)
 #endif
             mpirequest= -1
             mpistatus= -1

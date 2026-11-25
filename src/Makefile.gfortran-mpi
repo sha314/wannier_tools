@@ -26,7 +26,18 @@ LFLAG = $(OFLAG)
 
 
 # blas and lapack libraries
-LIBS = -llapack -lblas
+OPENBLAS_DIR ?= /opt/openblas
+
+OPENBLAS_LIB := $(shell \
+    if [ -f $(OPENBLAS_DIR)/lib64/libopenblas.so ]; then \
+        echo "-L$(OPENBLAS_DIR)/lib64 -lopenblas"; \
+    elif [ -f $(OPENBLAS_DIR)/lib/libopenblas.so ]; then \
+        echo "-L$(OPENBLAS_DIR)/lib -lopenblas"; \
+    else \
+        echo "-llapack -lblas"; \
+    fi)
+
+LIBS = ${ARPACK} $(OPENBLAS_LIB)
 
 # Intel MKL also supports with gfortran comipler
 # dynamic linking
@@ -44,3 +55,13 @@ main : $(OBJ)
 
 clean :
 	rm -f *.o *.mod *~ wt.x
+
+
+PREFIX ?= /usr/local
+BINDIR = $(PREFIX)/bin
+
+.PHONY: install
+
+install: wt.x
+	mkdir -p $(DESTDIR)$(BINDIR)
+	cp wt.x $(DESTDIR)$(BINDIR)/

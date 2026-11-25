@@ -221,7 +221,7 @@
      !> Here we assume that we have time reversal symmetry.
      
 #if defined (MPI)
-     use para, only : dp, Origin_cell, mpi_cmw, mpi_dp, mpi_in, mpi_sum, &
+     use para, only : dp, Origin_cell, mpi_cmw, mpi_dp, mpi_in, mpi_sum, mpi_allreduce, &
 #else
      use para, only : dp, Origin_cell, &
 #endif

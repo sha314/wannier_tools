@@ -198,7 +198,7 @@
             write(stdout, '(a, f8.2, a)')' \sigma/tau tensor at chemical potential : ', mu_array(ie)*1000d0/eV2Hartree, ' meV'
             do ib= 1, Nband_Fermi_Level
                write(stdout, '(a, i6)')' Band index: ', bands_fermi_level(ib)
-               write(stdout, '(100(10X,"T=" f10.2, "K", 18X))') (KBT_array(it)/8.6173324E-5/eV2Hartree, it=1, NumT)
+               write(stdout, '(100(10X,"T=", f10.2, "K", 18X))') (KBT_array(it)/8.6173324E-5/eV2Hartree, it=1, NumT)
                iter=0
                do i=1, 3
                   !> for each temperature
@@ -220,7 +220,7 @@
          write(stdout, '(a)')'> Total conductivity tensor in unit of (\Omega*m)^-1, assuming relaxation time \tau_n for each band is 1ps'
          do ie=1, OmegaNum
             write(stdout, '(a, f8.2, a)')' \sigma/tau tensor at chemical potential : ', mu_array(ie)*1000d0/eV2Hartree, ' meV'
-            write(stdout, '(100(10X,"T=" f10.2, "K", 18X))') (KBT_array(it)/8.6173324E-5/eV2Hartree, it=1, NumT)
+            write(stdout, '(100(10X,"T=", f10.2, "K", 18X))') (KBT_array(it)/8.6173324E-5/eV2Hartree, it=1, NumT)
             iter=0
             do i=1, 3
                !> for each temperature

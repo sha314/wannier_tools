@@ -7,6 +7,7 @@ project(WannierTools LANGUAGES Fortran)
 option(WT_USE_MPI        "Build with MPI support (-DMPI)"                  OFF)
 option(WT_USE_ARPACK     "Link against ARPACK"                             OFF)
 option(WT_COPY_TO_BIN    "Copy wt.x to ../bin after build (as in Makefile)" ON)
+option(WT_USE_MKL "Link Intel MKL (sequential, lp64) instead of OpenBLAS" OFF)
 set(OPENBLAS_DIR "/opt/openblas" CACHE PATH
     "OpenBLAS prefix (lib64/ or lib/ is searched); falls back to system LAPACK/BLAS")
 
@@ -88,19 +89,46 @@ set_target_properties(wt PROPERTIES OUTPUT_NAME "wt.x")
 # ---------------------------------------------------------------------------
 # BLAS / LAPACK: prefer OpenBLAS in OPENBLAS_DIR, otherwise system -llapack -lblas
 # ---------------------------------------------------------------------------
-find_library(WT_OPENBLAS_LIB
-  NAMES openblas
-  PATHS ${OPENBLAS_DIR}/lib64 ${OPENBLAS_DIR}/lib
-  NO_DEFAULT_PATH)
+if(WT_USE_MKL)
+  # MKL location: -DMKLROOT=... or the MKLROOT environment variable
+  set(MKLROOT "$ENV{MKLROOT}" CACHE PATH "Intel MKL root directory")
+  if(NOT MKLROOT)
+    message(FATAL_ERROR "WT_USE_MKL=ON but MKLROOT is not set. "
+                        "Source setvars.sh or pass -DMKLROOT=/path/to/mkl")
+  endif()
 
-if(WT_OPENBLAS_LIB)
-  message(STATUS "Using OpenBLAS: ${WT_OPENBLAS_LIB}")
-  target_link_libraries(wt PRIVATE ${WT_OPENBLAS_LIB})
+  # Same as the Makefile: -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
+  # (use mkl_gf_lp64 instead if you hit zdotc/zdotu-style crashes with gfortran)
+  set(MKL_INTERFACE_LIB mkl_gf_lp64 CACHE STRING "MKL interface layer")
+  set(MKL_LIBS "")
+  foreach(_lib ${MKL_INTERFACE_LIB} mkl_sequential mkl_core)
+    find_library(MKL_${_lib}_LIBRARY NAMES ${_lib}
+      PATHS ${MKLROOT}/lib/intel64 ${MKLROOT}/lib
+      NO_DEFAULT_PATH)
+    if(NOT MKL_${_lib}_LIBRARY)
+      message(FATAL_ERROR "Could not find lib${_lib} under ${MKLROOT}/lib[/intel64]")
+    endif()
+    list(APPEND MKL_LIBS ${MKL_${_lib}_LIBRARY})
+  endforeach()
+
+  find_package(Threads REQUIRED)
+  message(STATUS "Using MKL from ${MKLROOT}")
+  target_link_libraries(wt PRIVATE ${MKL_LIBS} Threads::Threads m ${CMAKE_DL_LIBS})
 else()
-  message(STATUS "OpenBLAS not found in ${OPENBLAS_DIR}; using system BLAS/LAPACK")
-  find_package(LAPACK REQUIRED)
-  find_package(BLAS REQUIRED)
-  target_link_libraries(wt PRIVATE ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+  find_library(WT_OPENBLAS_LIB
+    NAMES openblas
+    PATHS ${OPENBLAS_DIR}/lib64 ${OPENBLAS_DIR}/lib
+    NO_DEFAULT_PATH)
+
+  if(WT_OPENBLAS_LIB)
+    message(STATUS "Using OpenBLAS: ${WT_OPENBLAS_LIB}")
+    target_link_libraries(wt PRIVATE ${WT_OPENBLAS_LIB})
+  else()
+    message(STATUS "OpenBLAS not found in ${OPENBLAS_DIR}; using system BLAS/LAPACK")
+    find_package(LAPACK REQUIRED)
+    find_package(BLAS REQUIRED)
+    target_link_libraries(wt PRIVATE ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+  endif()
 endif()
 
 # ---------------------------------------------------------------------------

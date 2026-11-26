@@ -163,3 +163,13 @@ Xiaoxiong Liu, Lei Li, Yvgui Cui, Jianbo Deng, and Xiaoma Tao
 http://dx.doi.org/10.1063/1.4986155
  Appl. Phys. Lett. 111, 122104 (2017)
 
+### mpi module and cmake support
+Free version of Claude and ChatGPT was used to generate and fix part of the new code. Then tested without AI.
+
+```
+mkdir build && cd build
+cmake .. -DCMAKE_Fortran_COMPILER=mpif90 -DOPENBLAS_DIR=/opt/openblas -DWT_USE_MPI=ON -DCMAKE_INSTALL_PREFIX=/opt/wt
+make -j 6
+make PREFIX=/opt/wt install
+```
+

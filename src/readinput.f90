@@ -6,9 +6,10 @@ subroutine readinput
 
    use wmpi
    use para
+   use cmdline, only : get_input_filename
    implicit none
 
-   character*12 :: fname='wt.in'
+   !>character*12 :: fname='wt.in'
    character*25 :: char_temp
    character*256 :: inline
    logical ::  exists, lfound
@@ -27,13 +28,13 @@ subroutine readinput
    real(dp), allocatable :: mass_temp(:)
    real(dp), allocatable :: Born_Charge_temp(:, :, :)
 
-   inquire(file=fname,exist=exists)
+   inquire(file=trim(get_input_filename()),exist=exists)
    if (exists)then
       if(cpuid==0)write(stdout,*) '  '
-      if(cpuid==0)write(stdout,*) '>>>Read some paramters from wt.in'
-      open(unit=1001,file=fname,status='old')
+      if(cpuid==0)write(stdout,*) '>>>Read some paramters from ' // trim(get_input_filename())
+      open(unit=1001,file=trim(get_input_filename()),status='old')
    else
-      if(cpuid==0)write(stdout,*)'file' ,fname, 'does not exist'
+      if(cpuid==0)write(stdout,*)'file' ,trim(get_input_filename()), 'does not exist'
       stop
    endif
 
@@ -1175,7 +1176,7 @@ subroutine readinput
    if (lfound) then
       if (cpuid==0) then
          write(stdout, *)" "
-         write(stdout, *)">> Wannier centers from wt.in, in unit of unit lattice vectors"
+         write(stdout, *)">> Wannier centers from " // trim(get_input_filename()) // ", in unit of unit lattice vectors"
          write(stdout, '(a6, 6a10)')'iwann', 'R1', 'R2', 'R3', 'x', 'y', 'z'
          do i=1, NumberOfspinorbitals
             write(stdout, '(i6, 6f10.6)')i, Origin_cell%wannier_centers_direct(:, i), &
@@ -1698,7 +1699,7 @@ subroutine readinput
    outfileindex= outfileindex+ 1
    if (cpuid.eq.0) then
       open(outfileindex, file="POSCAR-rotated")
-      write(outfileindex, '(a)')"Rotated POSCAR by SURFACE card in wt.in by WannierTools"
+      write(outfileindex, '(a)')"Rotated POSCAR by SURFACE card in " // trim(get_input_filename()) // " by WannierTools"
       write(outfileindex, '(a)')"1.0"
       write(outfileindex, '(3f12.6)') R1/Angstrom2atomic
       write(outfileindex, '(3f12.6)') R2/Angstrom2atomic
@@ -3163,7 +3164,7 @@ subroutine readinput
    if (stat/=0) then
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, *)' '
-      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of atoms in wt.in like this:'
+      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of atoms in ' // trim(get_input_filename()) // ' like this:'
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, '(a)')'SELECTED_ATOMS'
       if (cpuid==0) write(stdout, '(a)')'2 ! number of groups'
@@ -3347,7 +3348,7 @@ subroutine readinput
    if (stat/=0) then
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, *)' '
-      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of bands and band indices in wt.in like this:'
+      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of bands and band indices in ' // trim(get_input_filename()) // ' like this:'
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, '(a)')'SELECTED_OCCUPIED_BANDS'
       if (cpuid==0) write(stdout, '(a)')'4-7 ! band indices '
@@ -3408,7 +3409,7 @@ subroutine readinput
    if (stat/=0) then
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, *)' '
-      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of bands and band indices in wt.in like this:'
+      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of bands and band indices in ' // trim(get_input_filename()) // ' like this:'
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, '(a)')'SELECTED_BANDS'
       if (cpuid==0) write(stdout, '(a)')'4  ! number of selected bands'
@@ -3484,7 +3485,7 @@ subroutine readinput
    if (stat/=0) then
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, *)' '
-      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of bands and band indices in wt.in like this:'
+      if (cpuid==0) write(stdout, '(a)')'Error: Please set the right number of bands and band indices in ' // trim(get_input_filename()) // ' like this:'
       if (cpuid==0) write(stdout, *)' '
       if (cpuid==0) write(stdout, '(a)')'TBTOKP'
       if (cpuid==0) write(stdout, '(a)')'8  ! number of selected bands to constOrigin_cell%Ruct kp model'
@@ -3622,7 +3623,7 @@ subroutine readinput
 
    !eta=(omegamax- omegamin)/omeganum*2d0
 
-   if(cpuid==0)write(stdout,*)'<<<Read wt.in file successfully'
+   if(cpuid==0)write(stdout,*)'<<<Read ' // trim(get_input_filename()) // ' file successfully'
 
    contains
 

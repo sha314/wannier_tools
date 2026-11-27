@@ -37,6 +37,7 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/modules)
 # ---------------------------------------------------------------------------
 set(WT_SOURCES
   src/module.f90
+  src/cmdline.f90
   src/sparse.f90
   src/wt_aux.f90
   src/math_lib.f90

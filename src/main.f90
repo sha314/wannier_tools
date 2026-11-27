@@ -36,6 +36,7 @@
 
      use wmpi
      use para
+     use cmdline, only : parse_command_line
      implicit none
 
      !> file existence
@@ -77,6 +78,8 @@
         write(stdout, *)' '
      endif
 
+     !> parse command line for input file
+     call parse_command_line()
      !> readin the control parameters for this program
      call now(time_start)
      call readinput
